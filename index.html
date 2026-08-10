@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anitya World Jam — Create a world. Win cash.</title>
+<meta name="description" content="Six weeks. $2,000 in prizes. Create a world in your browser, no code, and win. The Anitya World Jam runs 20 August to 1 October 2026.">
+<style>
+@font-face{font-family:'Realce';src:url('assets/realce-black.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:'Codec';src:url('assets/codec-pro-bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Codec';src:url('assets/codec-pro-light.woff2') format('woff2');font-weight:300;font-display:swap}
+
+:root{
+  --bg:#14161b; --teal:#002c33; --panel:#1d2129;
+  --green:#52ece1; --light:#e7e7e7; --mid:#8f8e93;
+  --yellow:#fbe95f; --pink:#f29de1; --orange:#fa813a;
+  --maxw:1120px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--light);
+  font-family:'Codec',system-ui,-apple-system,sans-serif; font-weight:300;
+  line-height:1.65; -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(900px 620px at 12% -6%, rgba(36,150,150,.30), transparent 62%),
+    radial-gradient(760px 560px at 96% 12%, rgba(30,90,130,.24), transparent 60%),
+    radial-gradient(640px 480px at 88% 62%, rgba(242,157,225,.07), transparent 60%),
+    radial-gradient(720px 520px at 6% 88%, rgba(250,129,58,.06), transparent 60%),
+    radial-gradient(1000px 700px at 50% 104%, rgba(24,120,115,.22), transparent 62%);
+  background-attachment:fixed;
+}
+h1,h2,h3,.realce{font-family:'Realce',Arial Black,Impact,sans-serif;font-weight:900;letter-spacing:.01em;line-height:1.04}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{padding:72px 0;border-top:1px solid rgba(231,231,231,.07)}
+section:first-of-type{border-top:none}
+.eyebrow{font-family:'Realce',sans-serif;font-size:13px;letter-spacing:.16em;color:var(--green);text-transform:uppercase;margin-bottom:14px}
+h2{font-size:clamp(28px,4.4vw,44px);margin-bottom:14px}
+.lead{color:var(--mid);font-size:17px;max-width:70ch}
+a{color:var(--green)}
+
+/* ---------- top bar ---------- */
+header{position:sticky;top:0;z-index:40;background:rgba(20,22,27,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(231,231,231,.08)}
+.bar{max-width:var(--maxw);margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.bar img{height:26px;width:auto}
+.bar nav{display:flex;gap:22px;font-size:14px}
+.bar nav a{color:var(--mid);text-decoration:none}
+.bar nav a:hover{color:var(--light)}
+@media(max-width:820px){.bar nav{display:none}}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:'Realce',sans-serif;font-size:16px;letter-spacing:.02em;
+  padding:15px 30px;border-radius:999px;border:0;cursor:pointer;text-decoration:none;transition:.18s}
+.btn-primary{background:var(--green);color:var(--teal)}
+.btn-primary:hover{filter:brightness(1.09);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--light);border:1px solid rgba(231,231,231,.28)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+.btn[disabled]{opacity:.42;cursor:not-allowed;transform:none}
+
+/* ---------- tags ---------- */
+.tag{display:inline-flex;align-items:center;gap:7px;font-family:'Codec',sans-serif;font-weight:700;
+  font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;padding:6px 13px;border-radius:999px}
+.tag-live{background:rgba(82,236,225,.14);color:var(--green);border:1px solid rgba(82,236,225,.4)}
+.tag-off{background:rgba(143,142,147,.12);color:var(--mid);border:1px solid rgba(143,142,147,.3)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.8s infinite}
+.dot-off{background:var(--mid);animation:none}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(82,236,225,.6)}50%{opacity:.55;box-shadow:0 0 0 6px rgba(82,236,225,0)}}
+
+/* ---------- hero ---------- */
+.hero{padding:74px 0 64px;text-align:center}
+.hero h1{font-size:clamp(38px,7.4vw,78px);margin:18px 0 18px}
+.hero h1 .accent{color:var(--green)}
+.hero h1 .accent-y{color:var(--yellow)}
+.hero .lead{margin:0 auto 30px;font-size:19px}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.microcopy{font-size:13.5px;color:var(--mid)}
+
+/* ---------- countdown ---------- */
+.cd{display:flex;gap:12px;justify-content:center;margin:36px 0 8px;flex-wrap:wrap}
+.cd-unit{background:rgba(29,33,41,.72);border:1px solid rgba(231,231,231,.1);border-radius:14px;
+  min-width:92px;padding:14px 10px}
+.cd-num{font-family:'Realce',sans-serif;font-size:38px;color:var(--green);line-height:1}
+.cd-lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);margin-top:6px}
+.cd-title{font-family:'Codec',sans-serif;font-weight:700;font-size:13px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mid);text-align:center}
+.cd-frozen .cd-num{color:var(--mid)}
+
+/* ---------- generic grid + panels ---------- */
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:880px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.panel{background:rgba(29,33,41,.6);border:1px solid rgba(231,231,231,.09);border-radius:18px;padding:26px}
+.panel h3{font-size:19px;margin-bottom:9px}
+.panel p{color:var(--mid);font-size:15px}
+
+/* ---------- timeline ---------- */
+.tl{position:relative;padding-left:28px}
+.tl:before{content:'';position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:linear-gradient(var(--green),rgba(82,236,225,.12))}
+.tl-item{position:relative;padding:0 0 26px 0}
+.tl-item:before{content:'';position:absolute;left:-27px;top:7px;width:16px;height:16px;border-radius:50%;
+  background:var(--bg);border:3px solid var(--green)}
+.tl-item.dim:before{border-color:var(--mid)}
+.tl-date{font-family:'Realce',sans-serif;font-size:15px;color:var(--green);letter-spacing:.04em}
+.tl-item.dim .tl-date{color:var(--mid)}
+.tl-body{font-size:15px;color:var(--mid);margin-top:3px}
+.tl-body strong{color:var(--light);font-weight:700}
+
+/* ---------- prize table ---------- */
+.prize{width:100%;border-collapse:collapse;margin-top:8px}
+.prize td{padding:13px 8px;border-bottom:1px solid rgba(231,231,231,.08);font-size:15.5px}
+.prize tr:last-child td{border-bottom:none}
+.prize td:last-child{text-align:right;font-family:'Realce',sans-serif;color:var(--green);font-size:19px}
+.prize .place{color:var(--mid)}
+.pool{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.pool .big{font-family:'Realce',sans-serif;font-size:clamp(40px,7vw,64px);color:var(--green);line-height:1}
+/* medal markers (podium) + week markers (match the Side Quest cards) */
+.medal{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:9px;vertical-align:baseline}
+.m-gold{background:var(--yellow);box-shadow:0 0 8px rgba(251,233,95,.45)}
+.m-silver{background:var(--light)}
+.m-bronze{background:var(--orange)}
+.m-none{background:rgba(143,142,147,.45)}
+.wk-g{background:var(--green)}.wk-p{background:var(--pink)}.wk-o{background:var(--orange)}.wk-y{background:var(--yellow)}
+.wk-g,.wk-p,.wk-o,.wk-y{border-radius:3px}
+/* accent strips on the two prize panels */
+.panel-accent{position:relative;overflow:hidden}
+.panel-accent::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green)}
+.panel-quests::before{background:linear-gradient(90deg,var(--green),var(--pink),var(--orange),var(--yellow))}
+
+/* ---------- category cards ---------- */
+.cat{background:rgba(29,33,41,.72);border:1px solid rgba(231,231,231,.1);border-radius:20px;overflow:hidden}
+.cat-banner{height:190px;background-size:cover;background-position:center;position:relative}
+.cat-banner:after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(20,22,27,.96),rgba(20,22,27,.15))}
+.cat-banner .tag{position:absolute;top:14px;left:14px;z-index:2}
+.cat-body{padding:24px}
+.cat-body h3{font-size:26px;margin-bottom:8px}
+.cat-meta{display:flex;gap:26px;flex-wrap:wrap;margin:18px 0 20px;padding:16px 0;
+  border-top:1px solid rgba(231,231,231,.08);border-bottom:1px solid rgba(231,231,231,.08)}
+.cat-meta div{font-size:13px;color:var(--mid)}
+.cat-meta strong{display:block;font-family:'Realce',sans-serif;font-size:22px;color:var(--light);margin-top:3px}
+.cat ul{margin:0 0 20px 18px;color:var(--mid);font-size:15px}
+.cat ul li{margin-bottom:6px}
+
+/* ---------- locked side quest cards ---------- */
+.locked{position:relative;background:rgba(29,33,41,.7);border:1px solid rgba(231,231,231,.09);
+  border-radius:18px;min-height:220px;overflow:hidden;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:26px 20px}
+.locked .blurred{filter:blur(9px);opacity:.32;user-select:none;pointer-events:none}
+.locked .blurred h3{font-size:20px;margin-bottom:8px}
+.locked .blurred p{font-size:14px;color:var(--mid)}
+.lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;background:rgba(20,22,27,.55);backdrop-filter:blur(3px)}
+.lock-icon{width:42px;height:42px;border-radius:12px;background:rgba(82,236,225,.12);
+  border:1px solid rgba(82,236,225,.32);display:flex;align-items:center;justify-content:center;font-size:19px}
+.lock-week{font-family:'Realce',sans-serif;font-size:17px;color:var(--light)}
+.lock-when{font-size:12.5px;color:var(--mid);letter-spacing:.06em}
+/* per-week accents — thin top line + icon tint (support colors = small elements only) */
+.locked{border-top:3px solid var(--green)}
+.locked.q2{border-top-color:var(--pink)}
+.locked.q2 .lock-icon{background:rgba(242,157,225,.12);border-color:rgba(242,157,225,.4)}
+.locked.q2 .lock-when{color:var(--pink)}
+.locked.q3{border-top-color:var(--orange)}
+.locked.q3 .lock-icon{background:rgba(250,129,58,.12);border-color:rgba(250,129,58,.4)}
+.locked.q3 .lock-when{color:var(--orange)}
+.locked.q4{border-top-color:var(--yellow)}
+.locked.q4 .lock-icon{background:rgba(251,233,95,.12);border-color:rgba(251,233,95,.4)}
+.locked.q4 .lock-when{color:var(--yellow)}
+.locked.q1 .lock-when{color:var(--green)}
+
+/* sealed-card animations: a light sweep passes over each card in turn,
+   and the lock refuses with a shake when you hover */
+.locked::after{content:'';position:absolute;top:0;bottom:0;left:-70%;width:45%;
+  background:linear-gradient(105deg,transparent,rgba(231,231,231,.075),transparent);
+  transform:skewX(-18deg);animation:sweep 7s infinite;pointer-events:none;z-index:3}
+.locked.q2::after{animation-delay:1.75s}
+.locked.q3::after{animation-delay:3.5s}
+.locked.q4::after{animation-delay:5.25s}
+@keyframes sweep{0%{left:-70%}18%{left:130%}100%{left:130%}}
+.locked{transition:transform .25s,border-color .25s,box-shadow .25s}
+.locked:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(0,0,0,.35)}
+.locked .lock-icon{transition:transform .2s}
+.locked:hover .lock-icon{animation:refuse .45s}
+@keyframes refuse{0%,100%{transform:translateX(0) rotate(0)}20%{transform:translateX(-4px) rotate(-6deg)}
+  40%{transform:translateX(4px) rotate(6deg)}60%{transform:translateX(-3px) rotate(-4deg)}80%{transform:translateX(2px) rotate(3deg)}}
+@media(prefers-reduced-motion:reduce){
+  .locked::after{animation:none}
+  .locked:hover{transform:none}
+  .locked:hover .lock-icon{animation:none}
+  .dot{animation:none}
+}
+
+/* ---------- badge feature ---------- */
+.badge-wrap{background:linear-gradient(140deg,rgba(82,236,225,.11),rgba(29,33,41,.75));
+  border:1px solid rgba(82,236,225,.26);border-radius:22px;padding:36px}
+.badge-pill{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:var(--teal);
+  font-family:'Realce',sans-serif;font-size:14px;letter-spacing:.06em;padding:8px 16px;border-radius:999px;margin-bottom:18px}
+
+/* ---------- forms ---------- */
+.form{background:rgba(29,33,41,.66);border:1px solid rgba(231,231,231,.1);border-radius:20px;padding:30px}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:'Codec',sans-serif;font-weight:700;font-size:13px;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--mid);margin-bottom:7px}
+.field input,.field select,.field textarea{
+  width:100%;background:rgba(20,22,27,.8);border:1px solid rgba(231,231,231,.16);border-radius:11px;
+  color:var(--light);font-family:'Codec',sans-serif;font-weight:300;font-size:15.5px;padding:13px 15px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--green)}
+.field textarea{min-height:88px;resize:vertical}
+.field .hint{font-size:12.5px;color:var(--mid);margin-top:6px}
+.req{color:var(--green)}
+/* email-match warning: orange = "this can cost you a prize" — used nowhere else */
+.hint-warn{display:flex;gap:8px;align-items:flex-start;background:rgba(250,129,58,.08);
+  border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:9px 12px;
+  font-size:12.5px;color:var(--mid);margin-top:8px;line-height:1.5}
+.hint-warn strong{color:var(--orange)}
+.hint-warn .wi{flex:0 0 auto;color:var(--orange);font-size:13px;line-height:1.5}
+
+/* ---------- submission toggle ---------- */
+.seg{display:inline-flex;background:rgba(20,22,27,.8);border:1px solid rgba(231,231,231,.14);
+  border-radius:999px;padding:5px;gap:4px;margin-bottom:22px}
+.seg button{font-family:'Realce',sans-serif;font-size:14.5px;letter-spacing:.03em;border:0;cursor:pointer;
+  padding:10px 22px;border-radius:999px;background:transparent;color:var(--mid);transition:.18s}
+.seg button.on{background:var(--green);color:var(--teal)}
+.seg button:not(.on):hover{color:var(--light)}
+.formpane{display:none}
+.formpane.on{display:block;animation:fadein .25s}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.quest-strip{display:flex;align-items:center;gap:10px;background:rgba(82,236,225,.08);
+  border:1px solid rgba(82,236,225,.25);border-radius:12px;padding:12px 16px;margin-bottom:18px;
+  font-size:14px;color:var(--mid)}
+.quest-strip strong{color:var(--light)}
+
+/* ---------- faq ---------- */
+details{border-bottom:1px solid rgba(231,231,231,.08);padding:16px 0}
+summary{cursor:pointer;font-family:'Codec',sans-serif;font-weight:700;font-size:16.5px;list-style:none;
+  display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}
+summary:after{content:'+';color:var(--green);font-family:'Realce',sans-serif;font-size:20px;line-height:1}
+details[open] summary:after{content:'\2212'}
+details p{color:var(--mid);font-size:15px;margin-top:11px;max-width:78ch}
+
+/* ---------- discord ---------- */
+.discord{background:rgba(29,33,41,.72);border:1px solid rgba(231,231,231,.1);border-radius:22px;
+  padding:36px;display:flex;gap:28px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+
+footer{padding:44px 0 60px;color:var(--mid);font-size:14px;text-align:center;border-top:1px solid rgba(231,231,231,.07)}
+footer img{height:24px;opacity:.85;margin-bottom:16px}
+.note{max-width:78ch;margin:0 auto}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <img src="assets/anitya_logo_white.png" alt="Anitya">
+    <nav>
+      <a href="#jam">The Jam</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#prizes">Prizes</a>
+      <a href="#submit">Submit</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="btn btn-primary" href="#register" style="padding:11px 22px;font-size:14px">Register</a>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<div class="wrap hero">
+  <span class="tag tag-live"><span class="dot"></span> Registration open</span>
+  <h1>Create a world.<br><span class="accent">Win cash.</span></h1>
+  <p class="lead">Six weeks. $2,000 in prizes. No code, no downloads, no experience needed —
+  type a sentence in your browser and walk into the result.</p>
+
+  <div class="cd" id="cd-hero" data-target="2026-08-20T00:00:00"></div>
+  <p class="cd-title" id="cd-hero-title">Until the jam opens</p>
+
+  <div class="hero-cta" style="margin-top:32px">
+    <a class="btn btn-primary" href="#register">Register free</a>
+    <a class="btn btn-ghost" href="https://app.anitya.space/?utm_source=worldjam-page&utm_medium=referral&utm_campaign=world-jam&utm_content=explore-first" target="_blank" rel="noopener">Explore Anitya first</a>
+  </div>
+  <p class="microcopy">Free to enter · 18+ · Anitya is in open beta</p>
+</div>
+
+<!-- ================= WHAT IS IT ================= -->
+<section id="jam">
+  <div class="wrap">
+    <p class="eyebrow">The Anitya World Jam</p>
+    <h2>We shipped something bigger than we can test alone.</h2>
+    <p class="lead">Anitya lets you create a 3D world in your browser and share it with a link.
+    It is in open beta, which means parts of it are rough and we do not know where all the edges
+    are yet. So we are asking you to find them.</p>
+    <p class="lead" style="margin-top:14px">Create worlds. Tell us what broke. Win cash. The best
+    worlds share a $1,800 pool, and the creators who stick around earn something that lasts.</p>
+
+    <div class="grid g3" style="margin-top:34px">
+      <div class="panel">
+        <h3>1. Register</h3>
+        <p>Free, takes a minute. You get the weekly themes, the rules and a reminder before each deadline.</p>
+      </div>
+      <div class="panel">
+        <h3>2. Create &amp; publish</h3>
+        <p>Make a world in the browser and publish it to the public feed. Drag and drop, or start from a prompt.</p>
+      </div>
+      <div class="panel">
+        <h3>3. Submit your link</h3>
+        <p>Drop your world link into the category you are entering. Enter as many as you like.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ANITYA ================= -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">About Anitya</p>
+    <h2>Worlds, not websites.</h2>
+    <div class="grid g2" style="margin-top:22px;align-items:start">
+      <div>
+        <p class="lead">Anitya is a no-code platform for creating immersive 3D Worlds. You place
+        objects, wire up triggers, add sound, and publish. Your world opens on a phone, a desktop or
+        a headset from a single link, and the people you share it with never need an account.</p>
+        <p class="lead" style="margin-top:14px"><strong style="color:var(--light);font-weight:700">Our
+        mission</strong> is to make creating a world as easy as writing a sentence — so that anyone with
+        an idea can put people inside it.</p>
+        <p class="lead" style="margin-top:14px"><strong style="color:var(--light);font-weight:700">Where
+        we are now:</strong> open beta, live and public, improving every week. Built by the team behind
+        the Godot engine. Blender assets import directly. Some things are still broken, and we would
+        rather you found them than didn't.</p>
+      </div>
+      <div class="grid g2">
+        <img src="assets/world_invasion.jpg" alt="Invasion by GabrielBrasil" style="width:100%;border-radius:14px">
+        <img src="assets/world_qanara.jpg" alt="Qanara by Michael" style="width:100%;border-radius:14px">
+        <img src="assets/world_barbarossa_cove.jpg" alt="Barbarossa Cove by GabrielBrasil" style="width:100%;border-radius:14px">
+        <img src="assets/world_tropical_island.jpg" alt="Tropical Island by GS" style="width:100%;border-radius:14px">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TIMELINE ================= -->
+<section id="timeline">
+  <div class="wrap">
+    <p class="eyebrow">How it runs</p>
+    <h2>Six weeks, four surprises, one finale.</h2>
+    <div class="tl" style="margin-top:32px;max-width:760px">
+      <div class="tl-item">
+        <div class="tl-date">OPEN NOW</div>
+        <div class="tl-body"><strong>Registration.</strong> Free, and it stays open for the whole jam.
+        Register early and each Side Quest lands in your inbox the moment it unlocks.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">20 AUGUST</div>
+        <div class="tl-body"><strong>The jam opens.</strong> The Main Jam goes live. Start creating and publishing.</div>
+      </div>
+      <div class="tl-item dim">
+        <div class="tl-date">27 AUG · 3 SEP · 10 SEP · 17 SEP</div>
+        <div class="tl-body"><strong>Side Quests unlock.</strong> A new themed challenge every week, announced on the day. Two winners each.</div>
+      </div>
+      <div class="tl-item dim">
+        <div class="tl-date">1 OCTOBER</div>
+        <div class="tl-body"><strong>Submissions close.</strong> Last chance to publish and submit.</div>
+      </div>
+      <div class="tl-item dim">
+        <div class="tl-date">8 OCTOBER</div>
+        <div class="tl-body"><strong>Winners announced.</strong> Cash paid out across both categories.</div>
+      </div>
+      <div class="tl-item dim">
+        <div class="tl-date">18 NOVEMBER</div>
+        <div class="tl-body"><strong>Founding Creator badges awarded</strong> to the creators still creating 90 days on.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PRIZES ================= -->
+<section id="prizes">
+  <div class="wrap">
+    <p class="eyebrow">Prizes</p>
+    <div class="pool"><span class="big">$2,000</span><span class="lead">total prize pool</span></div>
+
+    <div class="grid g2" style="margin-top:30px;align-items:start">
+      <div class="panel panel-accent">
+        <h3 style="color:var(--green)">The Main Jam — $1,800</h3>
+        <p style="margin-bottom:10px">The five best worlds published during the jam.</p>
+        <table class="prize">
+          <tr><td class="place"><span class="medal m-gold"></span>First place</td><td>$700</td></tr>
+          <tr><td class="place"><span class="medal m-silver"></span>Second place</td><td>$500</td></tr>
+          <tr><td class="place"><span class="medal m-bronze"></span>Third place</td><td>$300</td></tr>
+          <tr><td class="place"><span class="medal m-none"></span>Fourth place</td><td>$200</td></tr>
+          <tr><td class="place"><span class="medal m-none"></span>Fifth place</td><td>$100</td></tr>
+        </table>
+      </div>
+      <div class="panel panel-accent panel-quests">
+        <h3 style="color:var(--green)">Side Quests — $200</h3>
+        <p style="margin-bottom:10px">Four weekly themed challenges. Two winners each week, $25 apiece.
+        Each theme is announced the day it unlocks, and judged on criteria announced with it.</p>
+        <table class="prize">
+          <tr><td class="place"><span class="medal wk-g"></span>Week 2 · two winners</td><td>$50</td></tr>
+          <tr><td class="place"><span class="medal wk-p"></span>Week 3 · two winners</td><td>$50</td></tr>
+          <tr><td class="place"><span class="medal wk-o"></span>Week 4 · two winners</td><td>$50</td></tr>
+          <tr><td class="place"><span class="medal wk-y"></span>Week 5 · two winners</td><td>$50</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- badge -->
+    <div class="badge-wrap" style="margin-top:22px">
+      <span class="badge-pill">◆ Anitya Founding Creator</span>
+      <h3 style="font-size:clamp(24px,3.4vw,34px);margin-bottom:12px">The prize that doesn't get spent.</h3>
+      <p class="lead">Cash is for what you create. The Founding Creator badge is for what you contribute —
+      and it is the reward we care most about.</p>
+      <div class="grid g3" style="margin-top:24px">
+        <div>
+          <h3 style="font-size:16px;color:var(--green);margin-bottom:6px">What it is</h3>
+          <p style="color:var(--mid);font-size:15px">A permanent badge beside your name everywhere in Anitya —
+          the feed, your world cards, your public profile — plus a role in our Discord.</p>
+        </div>
+        <div>
+          <h3 style="font-size:16px;color:var(--green);margin-bottom:6px">How you earn it</h3>
+          <p style="color:var(--mid);font-size:15px">Hand-picked by the team on quality of feedback, bug reports,
+          worlds built and how you show up for other creators. Not on who wins cash.</p>
+        </div>
+        <div>
+          <h3 style="font-size:16px;color:var(--green);margin-bottom:6px">When</h3>
+          <p style="color:var(--mid);font-size:15px"><strong style="color:var(--light)">18 November 2026</strong> —
+          90 days after the jam opens, to a limited group still creating. Benefits will grow over time.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= REGISTER ================= -->
+<section id="register">
+  <div class="wrap">
+    <p class="eyebrow">Step one</p>
+    <h2>Register for the World Jam</h2>
+    <p class="lead">Free, takes a minute, and stays open for the whole six weeks — so you can join late.
+    But register early and each Side Quest theme reaches you the moment it unlocks, along with a reminder
+    before every deadline.</p>
+
+    <div class="grid g2" style="margin-top:28px;align-items:start">
+      <div class="form">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <span class="tag tag-live"><span class="dot"></span> Registration live</span>
+        </div>
+        <div class="cd" id="cd-reg" data-target="2026-10-01T23:59:59" style="margin:0 0 6px"></div>
+        <p class="cd-title" style="margin-bottom:22px">Registration stays open until the jam ends</p>
+
+        <form id="registerForm">
+          <div class="field">
+            <label for="r-name">Your name <span class="req">*</span></label>
+            <input id="r-name" name="name" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="r-email">Email <span class="req">*</span></label>
+            <input id="r-email" name="email" type="email" required autocomplete="email">
+            <p class="hint-warn"><span class="wi">⚠</span><span><strong>Use the same email as your
+            Anitya account</strong> (or sign up to Anitya with this one). World ownership is verified
+            by account email before any prize is paid.</span></p>
+          </div>
+          <div class="field">
+            <label for="r-handle">Anitya username</label>
+            <input id="r-handle" name="anitya_username" placeholder="If you already have an account">
+          </div>
+          <div class="field">
+            <label for="r-found">How did you find us? <span class="req">*</span></label>
+            <select id="r-found" name="how_found" required>
+              <option value="">Choose one</option>
+              <option>Instagram or Facebook ad</option>
+              <option>TikTok</option>
+              <option>X / Twitter</option>
+              <option>YouTube</option>
+              <option>Reddit</option>
+              <option>itch.io</option>
+              <option>Anitya Discord</option>
+              <option>A friend told me</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="r-first">Is this your first time creating a 3D world? <span class="req">*</span></label>
+            <select id="r-first" name="first_time" required>
+              <option value="">Choose one</option>
+              <option>Yes, complete beginner</option>
+              <option>I've tried a bit</option>
+              <option>No, I create regularly</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%">Register free</button>
+          <p class="hint" style="text-align:center;margin-top:12px">18+ to win cash prizes.</p>
+        </form>
+      </div>
+
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <h3>You do not need experience</h3>
+          <p>If you have never made anything in 3D, this jam is aimed at you as much as anyone.
+          Drag and drop objects, or type a sentence and edit what comes back.</p>
+        </div>
+        <div class="panel" style="margin-bottom:16px">
+          <h3>You do not need to install anything</h3>
+          <p>Anitya runs in your browser. Your visitors never need an account to walk through what you made.</p>
+        </div>
+        <div class="panel">
+          <h3>Broken things count</h3>
+          <p>Telling us what's broken is how you earn the Founding Creator badge. There is no bug too small
+          and no complaint too blunt.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SUBMIT ================= -->
+<section id="submit">
+  <div class="wrap">
+    <p class="eyebrow">Step two</p>
+    <h2>Submit your world</h2>
+    <p class="lead">Two categories, one rule in your favour: every world you submit counts for The Main Jam,
+    and a Side Quest entry counts for both. You can submit as many worlds as you like.</p>
+
+    <!-- MAIN JAM CARD -->
+    <div class="cat" style="margin-top:30px">
+      <div class="cat-banner" style="background-image:url('assets/world_invasion.jpg')">
+        <span class="tag tag-off" id="mainjam-tag"><span class="dot dot-off"></span> Opens 20 August</span>
+      </div>
+      <div class="cat-body">
+        <h3>The Main Jam</h3>
+        <p class="lead">Create the best world you can, on any theme you like. Five winners share $1,800.</p>
+
+        <div class="cat-meta">
+          <div>Prize pool<strong>$1,800</strong></div>
+          <div>Winners<strong>Top 5</strong></div>
+          <div>Closes<strong>1 Oct 2026</strong></div>
+          <div>Announced<strong>8 Oct 2026</strong></div>
+        </div>
+
+        <div class="cd cd-frozen" id="cd-main" data-target="2026-10-01T23:59:59" data-frozen="1" style="margin:0 0 6px;justify-content:flex-start"></div>
+        <p class="cd-title" style="text-align:left;margin-bottom:22px" id="cd-main-title">Runs for 6 weeks once it opens</p>
+
+        <h3 style="font-size:16px;margin-bottom:8px">Judged on</h3>
+        <ul>
+          <li><strong style="color:var(--light);font-weight:700">Creativity</strong> — is this a place worth visiting?</li>
+          <li><strong style="color:var(--light);font-weight:700">Interactivity</strong> — how well you use triggers, sound, water, show/hide</li>
+          <li><strong style="color:var(--light);font-weight:700">Sense of place</strong> — does it feel like somewhere, not just a pile of objects</li>
+          <li><strong style="color:var(--light);font-weight:700">Completeness</strong> — does it feel finished</li>
+          <li><strong style="color:var(--light);font-weight:700">Shareability</strong> — would you send this to a friend?</li>
+        </ul>
+        <p class="hint" style="margin:-10px 0 20px;color:var(--mid);font-size:14px">
+          We do not judge imported asset quality. We judge what you made <em>in</em> Anitya.</p>
+
+        <button class="btn btn-primary" id="mainjam-btn" disabled>Opens 20 August</button>
+      </div>
+    </div>
+
+    <!-- SIDE QUESTS -->
+    <div style="margin-top:44px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:8px">
+        <h3 style="font-size:26px">Side Quests</h3>
+        <span class="lead" style="font-size:15px">$25 × 2 winners each week · $200 total</span>
+      </div>
+      <p class="lead" style="margin-bottom:24px">Four themed challenges, one per week. Each theme stays sealed
+      until the day it unlocks — so nobody gets a head start. Registered creators get an email the moment each one drops.</p>
+
+      <div class="grid g4">
+        <div class="locked q1">
+          <div class="blurred"><h3>Side Quest One</h3><p>Theme sealed until unlock</p></div>
+          <div class="lock-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-week">Week 2</div>
+            <div class="lock-when">Unlocks 27 Aug</div>
+          </div>
+        </div>
+        <div class="locked q2">
+          <div class="blurred"><h3>Side Quest Two</h3><p>Theme sealed until unlock</p></div>
+          <div class="lock-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-week">Week 3</div>
+            <div class="lock-when">Unlocks 3 Sep</div>
+          </div>
+        </div>
+        <div class="locked q3">
+          <div class="blurred"><h3>Side Quest Three</h3><p>Theme sealed until unlock</p></div>
+          <div class="lock-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-week">Week 4</div>
+            <div class="lock-when">Unlocks 10 Sep</div>
+          </div>
+        </div>
+        <div class="locked q4">
+          <div class="blurred"><h3>Side Quest Four</h3><p>Theme sealed until unlock</p></div>
+          <div class="lock-overlay">
+            <div class="lock-icon">🔒</div>
+            <div class="lock-week">Week 5</div>
+            <div class="lock-when">Unlocks 17 Sep</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBMISSION FORMS -->
+    <div class="form" style="margin-top:44px">
+      <h3 style="font-size:22px;margin-bottom:6px">Submission form</h3>
+      <p class="lead" style="margin-bottom:22px">Opens 20 August, when The Main Jam goes live.
+      Every Side Quest entry is automatically considered for The Main Jam too.</p>
+
+      <div class="seg" role="tablist">
+        <button type="button" class="on" id="tab-main" onclick="showPane('main')">The Main Jam</button>
+        <button type="button" id="tab-side" onclick="showPane('side')">Side Quests</button>
+      </div>
+
+      <!-- MAIN JAM PANE -->
+      <div class="formpane on" id="pane-main">
+        <form id="submitFormMain">
+          <input type="hidden" name="category" value="main-jam">
+          <div class="grid g2">
+            <div class="field">
+              <label for="m-email">Email you registered with <span class="req">*</span></label>
+              <input id="m-email" name="email" type="email" required disabled>
+              <p class="hint-warn"><span class="wi">⚠</span><span>Must match the email of the
+              <strong>Anitya account that created this world</strong> — ownership is checked before
+              winners are announced.</span></p>
+            </div>
+            <div class="field">
+              <label for="m-title">World name <span class="req">*</span></label>
+              <input id="m-title" name="world_name" required disabled>
+            </div>
+          </div>
+          <div class="field">
+            <label for="m-link">Your world link <span class="req">*</span></label>
+            <input id="m-link" name="world_url" placeholder="app.anitya.space/feed?world=..." required disabled>
+            <p class="hint">Your world must be published to the <strong>public feed</strong> to be eligible.</p>
+          </div>
+          <div class="field">
+            <label for="m-broke">Tell us what broke</label>
+            <textarea id="m-broke" name="what_broke" placeholder="Anything that glitched, confused you, or didn't work. Optional — but it's how the Founding Creator badge gets earned." disabled></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%" disabled>Submissions open 20 August</button>
+        </form>
+      </div>
+
+      <!-- SIDE QUEST PANE -->
+      <div class="formpane" id="pane-side">
+        <div class="quest-strip" id="quest-strip">
+          <span>🔒</span>
+          <span><strong>No Side Quest is live yet.</strong> The first unlocks 27 August — registered creators get the theme by email the moment it drops.</span>
+        </div>
+        <form id="submitFormSide">
+          <input type="hidden" name="category" value="" id="side-category">
+          <div class="grid g2">
+            <div class="field">
+              <label for="q-email">Email you registered with <span class="req">*</span></label>
+              <input id="q-email" name="email" type="email" required disabled>
+              <p class="hint-warn"><span class="wi">⚠</span><span>Must match the email of the
+              <strong>Anitya account that created this world</strong> — ownership is checked before
+              winners are announced.</span></p>
+            </div>
+            <div class="field">
+              <label for="q-title">World name <span class="req">*</span></label>
+              <input id="q-title" name="world_name" required disabled>
+            </div>
+          </div>
+          <div class="field">
+            <label for="q-link">Your world link <span class="req">*</span></label>
+            <input id="q-link" name="world_url" placeholder="app.anitya.space/feed?world=..." required disabled>
+            <p class="hint">Entered into the live Side Quest — and automatically into The Main Jam.</p>
+          </div>
+          <div class="field">
+            <label for="q-broke">Tell us what broke</label>
+            <textarea id="q-broke" name="what_broke" placeholder="Anything that glitched, confused you, or didn't work. Optional — but it's how the Founding Creator badge gets earned." disabled></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%" disabled id="side-btn">No Side Quest live yet</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DISCORD ================= -->
+<section>
+  <div class="wrap">
+    <div class="discord">
+      <div style="flex:1 1 340px">
+        <p class="eyebrow">Come create with people</p>
+        <h2 style="font-size:clamp(24px,3.4vw,34px)">Join the Anitya Discord</h2>
+        <p class="lead" style="margin-top:10px">Frequent updates, tutorials, support when you get stuck,
+        somewhere to send feedback, and a room full of people making the same thing you are.
+        Side Quest themes are announced here first.</p>
+      </div>
+      <a class="btn btn-primary" href="https://discord.gg/JU2uxvMYqk" target="_blank" rel="noopener">Join the Discord</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section id="faq">
+  <div class="wrap">
+    <p class="eyebrow">Questions</p>
+    <h2>Before you ask</h2>
+    <div style="margin-top:24px;max-width:840px">
+      <details><summary>Do I need experience with 3D?</summary>
+        <p>No. Anitya is drag and drop, and you can start from a written prompt and edit what comes back.
+        Plenty of entrants will be creating their first world. If that's you, say so when you register.</p></details>
+      <details><summary>Does it cost anything?</summary>
+        <p>No. Registering is free, Anitya is free to use, and there is no entry fee.</p></details>
+      <details><summary>Can I enter more than one world?</summary>
+        <p>Yes. Enter as many as you like, in both categories. Each is judged on its own.</p></details>
+      <details><summary>Do people need an account to see my world?</summary>
+        <p>No. You need a free account to create and publish. Your visitors just open the link.</p></details>
+      <details><summary>Anitya is in beta. What if something breaks?</summary>
+        <p>That's part of the point. Tell us — in your submission, or in the Discord. Quality of feedback
+        and bug reports is one of the main things the Founding Creator badge is judged on.</p></details>
+      <details><summary>Can I use assets I made in Blender?</summary>
+        <p>Yes, GLB files import directly. But judging is on what you create <em>in</em> Anitya —
+        composition, interactivity, atmosphere — not on imported asset quality.</p></details>
+      <details><summary>What stops someone submitting a world that isn't theirs?</summary>
+        <p>Ownership. Before any winner is announced, we verify that the email on the submission matches
+        the email of the Anitya account that actually created the world. Submitting first proves nothing —
+        a stolen link can't win, no matter who submits it, and submitting someone else's world gets you
+        removed from the jam and disqualified from the Founding Creator badge. So make sure you register
+        and submit with the same email as your Anitya account. If your emails don't match for a genuine
+        reason, tell us in the Discord before submissions close.</p></details>
+      <details><summary>How do I get paid if I win?</summary>
+        <p>We'll email the address you registered with and arrange it directly. You must be 18 or over
+        to receive a cash prize, and ownership of the winning world is verified first.</p></details>
+      <details><summary>What are the Side Quest themes?</summary>
+        <p>Sealed until each one unlocks — that's deliberate, so nobody can prepare in advance.
+        Registered creators get an email the moment each drops.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/anitya_logo_white.png" alt="Anitya">
+    <p class="note">Anitya World Jam · 20 August – 1 October 2026 · $2,000 in prizes<br>
+    Anitya is in open beta. Things will break. That's what you're here for.</p>
+    <p style="margin-top:16px"><a href="https://app.anitya.space" target="_blank" rel="noopener">app.anitya.space</a>
+    · <a href="https://discord.gg/JU2uxvMYqk" target="_blank" rel="noopener">Discord</a>
+    · <a href="https://anitya.space/covenant" target="_blank" rel="noopener">Creator Covenant</a></p>
+  </div>
+</footer>
+
+<script>
+/* ---------- countdowns ---------- */
+function pad(n){return String(n).padStart(2,'0')}
+function renderCd(el, target, frozen){
+  const now = new Date();
+  let d = Math.max(0, target - now);
+  if (frozen) d = 42*24*3600*1000; // Main Jam shows its 6-week duration until it opens
+  const days = Math.floor(d/86400000);
+  const hrs  = Math.floor(d%86400000/3600000);
+  const mins = Math.floor(d%3600000/60000);
+  const secs = Math.floor(d%60000/1000);
+  const units = frozen
+    ? [[days,'Days'],[0,'Hours'],[0,'Mins'],[0,'Secs']]
+    : [[days,'Days'],[hrs,'Hours'],[mins,'Mins'],[secs,'Secs']];
+  el.innerHTML = units.map(u=>
+    `<div class="cd-unit"><div class="cd-num">${pad(u[0])}</div><div class="cd-lab">${u[1]}</div></div>`
+  ).join('');
+}
+function tick(){
+  document.querySelectorAll('.cd').forEach(el=>{
+    const t = new Date(el.dataset.target);
+    renderCd(el, t, el.dataset.frozen === '1');
+  });
+  /* flip the hero countdown once the jam opens */
+  const heroEl = document.getElementById('cd-hero');
+  const open = new Date('2026-08-20T00:00:00');
+  if (new Date() >= open && heroEl.dataset.target.startsWith('2026-08-20')){
+    heroEl.dataset.target = '2026-10-01T23:59:59';
+    document.getElementById('cd-hero-title').textContent = 'Until submissions close';
+  }
+}
+tick(); setInterval(tick, 1000);
+
+/* ---------- forms ---------- */
+/* TODO: replace with the Google Apps Script web-app URL that writes to the jam sheet */
+const ENDPOINT = '';
+
+async function send(form, btn, doneText){
+  const data = Object.fromEntries(new FormData(form).entries());
+  data.submitted_at = new Date().toISOString();
+  data.page = location.pathname;
+  if (!ENDPOINT){ alert('Form endpoint not connected yet.\n\n' + JSON.stringify(data, null, 2)); return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try{
+    await fetch(ENDPOINT, {method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(data)});
+    form.innerHTML = '<p class="lead" style="text-align:center;padding:26px 0">'+doneText+'</p>';
+  }catch(e){ btn.disabled=false; btn.textContent='Try again'; }
+}
+document.getElementById('registerForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  send(this, this.querySelector('button'),
+    "You're in. Check your email for the rules and the first Side Quest.");
+});
+document.getElementById('submitFormMain').addEventListener('submit', function(e){
+  e.preventDefault();
+  send(this, this.querySelector('button'), "World received. Good luck.");
+});
+document.getElementById('submitFormSide').addEventListener('submit', function(e){
+  e.preventDefault();
+  send(this, this.querySelector('button'),
+    "Quest entry received — it's in The Main Jam too. Good luck.");
+});
+
+/* ---------- submission toggle ---------- */
+function showPane(which){
+  document.getElementById('pane-main').classList.toggle('on', which==='main');
+  document.getElementById('pane-side').classList.toggle('on', which==='side');
+  document.getElementById('tab-main').classList.toggle('on', which==='main');
+  document.getElementById('tab-side').classList.toggle('on', which==='side');
+}
+
+/* ---------- side quest week logic ---------- */
+const QUESTS = [
+  {week:2, opens:'2026-08-27T00:00:00', closes:'2026-09-03T00:00:00'},
+  {week:3, opens:'2026-09-03T00:00:00', closes:'2026-09-10T00:00:00'},
+  {week:4, opens:'2026-09-10T00:00:00', closes:'2026-09-17T00:00:00'},
+  {week:5, opens:'2026-09-17T00:00:00', closes:'2026-09-24T00:00:00'},
+];
+function updateQuest(){
+  const now = new Date();
+  const strip = document.getElementById('quest-strip');
+  const btn = document.getElementById('side-btn');
+  const cat = document.getElementById('side-category');
+  const live = QUESTS.find(q => now >= new Date(q.opens) && now < new Date(q.closes));
+  const next = QUESTS.find(q => now < new Date(q.opens));
+  if (live){
+    cat.value = 'side-quest-w' + live.week;
+    strip.innerHTML = '<span>⚔️</span><span><strong>Side Quest Week ' + live.week +
+      ' is live.</strong> The theme is in your inbox and the Discord. Entries close ' +
+      new Date(live.closes).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + '.</span>';
+    btn.textContent = 'Submit to Week ' + live.week + ' quest';
+    /* enabling of inputs stays tied to the jam being open (20 Aug) */
+  } else if (next){
+    strip.innerHTML = '<span>🔒</span><span><strong>No Side Quest is live right now.</strong> The next unlocks ' +
+      new Date(next.opens).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) +
+      ' — registered creators get the theme by email the moment it drops.</span>';
+    btn.textContent = 'No Side Quest live yet';
+  } else {
+    strip.innerHTML = '<span>🏁</span><span><strong>All four Side Quests have ended.</strong> The Main Jam is open until 1 October.</span>';
+    btn.textContent = 'Side Quests have ended';
+  }
+}
+updateQuest(); setInterval(updateQuest, 60000);
+</script>
+</body>
+</html>
